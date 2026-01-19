@@ -1,4 +1,4 @@
-export class invalidFileFormat extends Error {
+export class InvalidFileFormat extends Error {
   constructor() {
     super('Invalid file format')
   }

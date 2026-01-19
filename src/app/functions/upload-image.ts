@@ -4,7 +4,7 @@ import { schema } from '@/infra/db/schemas'
 import { uploadFileToStorage } from '@/infra/storage/upload-file-to-storage'
 import { Either, makeLeft, makeRight } from '@/shared/either'
 import { z } from 'zod'
-import { invalidFileFormat } from './errors/invalid-file-format'
+import { InvalidFileFormat } from './errors/invalid-file-format'
 
 const uploadImageInput = z.object({
   fileName: z.string(),
@@ -18,11 +18,11 @@ const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
 
 export async function uploadImage(
   input: UploadImageInput,
-): Promise<Either<invalidFileFormat, { url: string }>> {
+): Promise<Either<InvalidFileFormat, { url: string }>> {
   const { fileName, contentType, contentStream } = uploadImageInput.parse(input)
 
   if (!allowedMimeTypes.includes(contentType)) {
-    return makeLeft(new invalidFileFormat())
+    return makeLeft(new InvalidFileFormat())
   }
 
   const { key, url } = await uploadFileToStorage({

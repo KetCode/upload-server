@@ -46,7 +46,7 @@ export const uploadImageRoute: FastifyPluginAsyncZod = async server => {
       const error = unwrapEither(result)
 
       switch (error.constructor.name) {
-        case 'invalidFileFormat':
+        case 'InvalidFileFormat':
           return reply.status(400).send({ message: error.message })
       }
     },

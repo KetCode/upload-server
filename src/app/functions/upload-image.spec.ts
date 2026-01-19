@@ -5,7 +5,7 @@ import { schema } from '@/infra/db/schemas'
 import { isLeft, isRight, unwrapEither } from '@/shared/either'
 import { eq } from 'drizzle-orm'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
-import { invalidFileFormat } from './errors/invalid-file-format'
+import { InvalidFileFormat } from './errors/invalid-file-format'
 import { uploadImage } from './upload-image'
 
 describe('uploadImage', () => {
@@ -53,6 +53,6 @@ describe('uploadImage', () => {
     })
 
     expect(isLeft(sut)).toBe(true)
-    expect(unwrapEither(sut)).toBeInstanceOf(invalidFileFormat)
+    expect(unwrapEither(sut)).toBeInstanceOf(InvalidFileFormat)
   })
 })
