@@ -8,7 +8,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { InvalidFileFormat } from './errors/invalid-file-format'
 import { uploadImage } from './upload-image'
 
-describe('uploadImage', () => {
+describe('upload image', () => {
   beforeAll(() => {
     vi.mock('@/infra/storage/upload-file-to-storage.ts', () => {
       return {
