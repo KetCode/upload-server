@@ -28,7 +28,7 @@ describe('upload image', () => {
     // sistem under test
     const sut = await uploadImage({
       fileName,
-      contentType: 'image/png',
+      contentType: 'image/jpg',
       contentStream: Readable.from([]),
     })
 
