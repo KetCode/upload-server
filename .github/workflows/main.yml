@@ -13,6 +13,17 @@ jobs:
             - name: Checkout
               id: checkout
               uses: actions/checkout@v4
+            
+            - name: Node
+              id: node
+              uses: actions/setup-node@v4
+              with:
+                node-version: 20
+            
+            - name: Install dependencies
+              id: dependencies
+              run: |
+                npm install
 
             - name: Configure AWS Credentials
               id: configure-aws-credentials
@@ -25,12 +36,35 @@ jobs:
             - name: Login to AWS ECR
               id: login-ecr
               uses: aws-actions/amazon-ecr-login@v2
-            
+
+            - name: Set up Docker Buildx
+              id: setup-docker-buildx
+              uses: docker/setup-buildx-action@v3
+
             - name: Generate tag
               id: generate-tag
               run: |
                 SHA=$(echo $GITHUB_SHA | head -c7)
                 echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+            - name: Build and push image test to trivy scanner
+              uses: docker/build-push-action@v6
+              with:
+                context: .
+                load: true
+                cache-from: type=gha
+                cache-to: type=gha,mode=max
+                tags: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:test
+
+            - name: Run Trivy scanner
+              id: trivy-scanner
+              uses: aquasecurity/trivy-action@0.29.0
+              with:
+                image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:test'
+                format: 'table'
+                ignore-unfixed: true
+                vuln-type: 'os,library'
+                severity: 'CRITICAL,HIGH,MEDIUM,LOW'
 
             # Alternativa 1 para mandar imagem para a nuvem
             # - name: Build and push image to AWS ECR
@@ -50,4 +84,5 @@ jobs:
               with:
                 context: .
                 push: true
+                cache-from: type=gha
                 tags: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ steps.generate-tag.outputs.sha }}
